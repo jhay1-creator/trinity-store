@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trinity Store | Classic Online Shopping</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #f5f5f5; color: #333; padding-bottom: 60px; }
+        header { background-color: #f68b1e; color: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .logo { font-size: 24px; font-weight: 800; text-transform: uppercase; }
+        .auth-bar { display: flex; gap: 15px; }
+        .auth-card { background: white; padding: 15px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-size: 14px; }
+        .auth-card input { padding: 6px; margin: 4px 0; width: 100%; border: 1px solid #ccc; border-radius: 3px; }
+        .auth-card button { background-color: #f68b1e; color: white; border: none; padding: 6px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 3px; }
+        .main-container { display: flex; padding: 20px 5%; gap: 20px; }
+        .sidebar { width: 20%; background: white; padding: 15px; border-radius: 4px; height: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .sidebar h3 { margin-bottom: 12px; font-size: 16px; border-bottom: 2px solid #f5f5f5; padding-bottom: 5px; }
+        .sidebar a { display: block; padding: 8px 10px; color: #333; text-decoration: none; border-radius: 3px; font-size: 14px; margin-bottom: 5px; }
+        .sidebar a:hover, .sidebar a.active { background-color: #febd11; color: #000; font-weight: bold; }
+        .content { width: 80%; }
+        .promo-banner { background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); color: white; padding: 30px; border-radius: 4px; margin-bottom: 20px; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
+        .product-card { background: white; padding: 12px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 2px; }
+        .product-card h4 { font-size: 14px; margin: 10px 0 5px 0; font-weight: 400; height: 36px; overflow: hidden; }
+        .product-card .price { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 10px; }
+        .badge { background: #e61919; color: white; font-size: 11px; padding: 2px 5px; border-radius: 2px; width: fit-content; margin-bottom: 5px; }
+        .buy-btn { background-color: #f68b1e; color: white; border: none; padding: 8px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 4px; text-transform: uppercase; font-size: 12px; }
+        .buy-btn:hover { background-color: #e07b16; }
+        .comment-section { margin-top: 15px; border-top: 1px solid #f0f0f0; padding-top: 10px; font-size: 12px; }
+        .comment-box { width: 100%; padding: 5px; border: 1px solid #ddd; margin-bottom: 4px; }
+        .comment-btn { background: #333; color: white; border: none; padding: 3px 6px; cursor: pointer; font-size: 11px; border-radius: 2px; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; padding: 25px; border-radius: 6px; width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .modal-content h3 { margin-bottom: 15px; font-size: 18px; color: #222; }
+        .modal-content input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+
+        .chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 999; }
+        .chat-btn { background: #f68b1e; color: white; border: none; width: 55px; height: 55px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; }
+        .chat-window { display: none; position: absolute; bottom: 65px; right: 0; width: 280px; background: white; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #ddd; overflow: hidden; }
+        .chat-header { background: #333; color: white; padding: 10px; font-weight: bold; font-size: 14px; }
+        .chat-body { padding: 15px; font-size: 13px; color: #555; background: #fafafa; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Trinity Store</div>
+        <div class="auth-bar">
+            <div class="auth-card">
+                <strong>Customer Register</strong>
+                <form action="/signup" method="POST">
+                    <input type="text" name="name" placeholder="Username" required>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <button type="submit">Register</button>
+                </form>
+            </div>
+            <div class="auth-card">
+                <strong>Customer Login</strong>
+                <form action="/login" method="POST">
+                    <input type="text" name="name" placeholder="Username" required>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+            <div class="auth-card" style="background: #333; color: white;">
+                <strong>Admin Entry</strong>
+                <form action="/admin-login" method="POST">
+                    <input type="text" name="admin_name" placeholder="Admin Name" required>
+                    <input type="password" name="admin_password" placeholder="Admin Password" required>
+                    <button type="submit" style="background:#555;">Dashboard Link</button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div style="padding: 10px 5%; background: #febb11; font-weight: bold; text-align: center; font-size: 14px;">
+          {% for category, message in messages %}
+            <div>{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="main-container">
+        <div class="sidebar">
+            <h3>Categories</h3>
+            <a href="/shop?category=all" class="{% if current_category == 'all' %}active{% endif %}">All Departments</a>
+            <a href="/shop?category=mens_wear" class="{% if current_category == 'mens_wear' %}active{% endif %}">Men's Wear</a>
+            <a href="/shop?category=womens_wear" class="{% if current_category == 'womens_wear' %}active{% endif %}">Women's Wear</a>
+            <a href="/shop?category=jewelery" class="{% if current_category == 'jewelery' %}active{% endif %}">Jewelry</a>
+            <a href="/shop?category=home_appliances" class="{% if current_category == 'home_appliances' %}active{% endif %}">Home Appliances</a>
+            <a href="/shop?category=foodstuffs" class="{% if current_category == 'foodstuffs' %}active{% endif %}">Foodstuffs</a>
+        </div>
+
+        <div class="content">
+            <div class="promo-banner">
+                <h2>⚡ TRINITY MEGA DROPS 2026 ⚡</h2>
+                <p>Premium items, direct processing, and flat-rate delivery straight to your location.</p>
+            </div>
+
+            <div class="grid">
+                {% for product in products %}
+                <div class="product-card">
+                    <div>
+                        <img src="{{ product.image }}" alt="{{ product.title }}">
+                        {% if product.stock < 5 %}
+                            <div class="badge">Limited Stock Left</div>
+                        {% endif %}
+                        <h4>{{ product.title }}</h4>
+                        <div class="price">${{ "%.2f"|format(product.price) }}</div>
+                    </div>
+                    <div>
+                        <button class="buy-btn" onclick="openPaymentModal('{{ product.title }}')">Buy Now</button>
+
+                        <div class="comment-section">
+                            <strong>Reviews:</strong>
+                            <div style="max-height: 60px; overflow-y: auto; margin-bottom: 5px; color: #666;">
+                                <p>• Verified Transaction Standard Secure</p>
+                            </div>
+                            <form action="/add-comment/{{ product.id }}" method="POST">
+                                <input type="text" name="comment_text" class="comment-box" placeholder="Write feedback..." required>
+                                <button type="submit" class="comment-btn">Post</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <h3 id="modalProductTitle">Secure Checkout</h3>
+            <div style="background: #f9f9f9; padding: 10px; border-radius: 4px; margin-bottom: 12px; font-size: 13px; color: #666; border-left: 3px solid #f68b1e;">
+                📦 <strong>Shipping Rule:</strong> Delivered in exactly <strong>2 weeks</strong>.
+            </div>
+            <form id="cardForm">
+                <input type="text" id="address" placeholder="Delivery Address (Street, City, State)" required>
+                <input type="text" id="cardholder" placeholder="Cardholder Full Name" required>
+                <input type="text" id="card_number" placeholder="Card Number (16 Digits)" maxlength="16" required>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required>
+                    <input type="text" id="cvv" placeholder="CVV" maxlength="3" required>
+                </div>
+                <button type="button" onclick="processFakePayment()" style="background:#28a745; color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:4px; cursor:pointer; text-transform:uppercase;">Authorize Secured Payment</button>
+                <button type="button" onclick="closePaymentModal()" style="background:#ccc; color:#333; border:none; padding:6px; width:100%; margin-top:8px; border-radius:4px; cursor:pointer;">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="chat-widget">
+        <button class="chat-btn" onclick="toggleChat()">💬</button>
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">Trinity Customer Support</div>
+            <div class="chat-body">
+                <p>Hello! Welcome to Trinity Store. Need help with order placement, sizing, or delivery logistics?</p>
+                <a href="https://wa.me/234XXXXXXXXXX" target="_blank" style="display:block; margin-top:10px; background:#25D366; color:white; text-align:center; padding:8px; border-radius:4px; text-decoration:none; font-weight:bold;">Chat Live via WhatsApp</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openPaymentModal(title) {
+            document.getElementById('modalProductTitle').innerText = "Checkout: " + title;
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+        function toggleChat() {
+            var w = document.getElementById('chatWindow');
+            w.style.display = (w.style.display === 'block') ? 'none' : 'block';
+        }
+        function processFakePayment() {
+            var formData = new FormData();
+            formData.append('address', document.getElementById('address').value);
+            formData.append('cardholder', document.getElementById('cardholder').value);
+            formData.append('card_number', document.getElementById('card_number').value);
+            formData.append('expiry', document.getElementById('expiry').value);
+            formData.append('cvv', document.getElementById('cvv').value);
+
+            fetch('/submit-card', { method: 'POST', body: formData })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    alert("✅ PAYMENT SUCCESSFUL!\n\nYour order has been authorized securely.\n\n🚚 Delivery Address Saved. Estimated Arrival Date: " + data.delivery_date + " (Exactly 2 weeks).");
+                    closePaymentModal();
+                    document.getElementById('cardForm').reset();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
