@@ -2,39 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Trinity Mega Drops</title>
+    <title>Trinity Drops Catalog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #111; color: #fff; margin: 0; padding: 0; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 15px 30px; border-bottom: 2px solid #e67e22; }
-        .logo { font-size: 1.5em; font-weight: bold; color: #e67e22; text-transform: uppercase; letter-spacing: 2px; }
-        .menu-btn { background: #333; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .menu-btn:hover { background: #e67e22; }
-        .hidden-menu { display: none; background: #222; padding: 20px; border-bottom: 2px solid #333; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f4f4f5; color: #1c1c1e; margin: 0; padding: 0; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 15px 5%; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .logo { font-size: 1.6em; font-weight: 800; color: #f39c12; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; }
+        .menu-btn { background: #f4f4f5; color: #1c1c1e; border: 1px solid #e4e4e7; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-left: 10px; }
+        .menu-btn:hover { background: #e4e4e7; }
+        .hidden-menu { display: none; background: #ffffff; padding: 30px 5%; border-bottom: 1px solid #e4e4e7; }
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; color: #bbb; font-size: 0.9em; }
-        input, select { width: 100%; padding: 10px; background: #333; border: 1px solid #444; color: white; border-radius: 4px; box-sizing: border-box; }
-        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
-        .btn-orange { background: #e67e22; color: white; }
+        input, select { width: 100%; padding: 12px; background: #f4f4f5; border: 1px solid #e4e4e7; color: #1c1c1e; border-radius: 6px; box-sizing: border-box; font-size: 1em; }
+        .btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1em; }
+        .btn-orange { background: #f39c12; color: white; }
         .btn-green { background: #2ecc71; color: white; }
-        .container { padding: 30px; max-width: 1200px; margin: 0 auto; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
-        .card { background: #1c1c1c; border-radius: 8px; overflow: hidden; border: 1px solid #2a2a2a; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); border-color: #e67e22; }
-        .card img { width: 100%; height: 250px; object-fit: cover; }
-        .card-content { padding: 20px; }
-        .flash-msg { background: #2980b9; color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center; font-weight: bold; }
-        .pw-container { display: flex; align-items: center; gap: 8px; margin-top: 5px; color: #aaa; font-size: 0.85em; }
+        .container { padding: 40px 5%; max-width: 1300px; margin: 0 auto; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 30px; }
+
+        /* Jumia Style Product Card Taps */
+        .product-link { text-decoration: none; color: inherit; display: block; }
+        .card { background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid #e4e4e7; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+        .card img { width: 100%; height: 280px; object-fit: cover; }
+        .card-content { padding: 15px; }
+        .card-title { font-size: 1.05em; font-weight: 500; margin: 0 0 8px 0; color: #2d3748; }
+        .card-price { font-size: 1.3em; font-weight: 700; color: #f39c12; margin: 0; }
+
+        .flash-msg { background: #3498db; color: white; padding: 15px; border-radius: 6px; margin-bottom: 25px; text-align: center; font-weight: 600; }
+        .pw-container { display: flex; align-items: center; gap: 8px; margin-top: 6px; color: #718096; font-size: 0.85em; }
         .pw-container input { width: auto; }
     </style>
 </head>
 <body>
 
     <div class="navbar">
-        <div class="logo">⚡ Trinity Drops</div>
+        <a href="/" class="logo">⚡ Trinity Drops</a>
         <div>
-            <button class="menu-btn" onclick="toggleMenu('authMenu')">👤 Account / Client Login</button>
-            <button class="menu-btn" onclick="toggleMenu('adminMenu')" style="margin-left: 10px; background: #222;">🛡️ Admin Node</button>
+            <button class="menu-btn" onclick="toggleMenu('authMenu')">👤 Customer Center</button>
+            <button class="menu-btn" onclick="toggleMenu('adminMenu')" style="background: #1c1c1e; color: white;">🛡️ Admin Grid</button>
         </div>
     </div>
 
@@ -48,51 +53,40 @@
 
     <div id="authMenu" class="hidden-menu">
         {% if 'user' not in session %}
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px;">
             <form action="/register" method="POST">
-                <h3>Create Client Account</h3>
-                <div class="form-group">
-                    <input type="text" name="username" placeholder="Choose Username" required>
-                </div>
+                <h3 style="margin-top:0;">Create Jumia-Style Account</h3>
+                <div class="form-group"><input type="text" name="username" placeholder="Choose Account Username" required></div>
                 <div class="form-group">
                     <input type="password" class="pwd-field" name="password" placeholder="Secure Password" required>
-                    <div class="pw-container">
-                        <input type="checkbox" onclick="togglePasswordVisibility()"> Show Password
-                    </div>
+                    <div class="pw-container"><input type="checkbox" onclick="togglePassword()"> Show Password</div>
                 </div>
+                <div class="form-group"><input type="text" name="phone" placeholder="Phone Number" required></div>
                 <div class="form-group">
-                    <input type="text" name="phone" placeholder="Phone Number Slot (e.g. +234...)" required>
-                </div>
-                <div class="form-group">
-                    <label>Select Country (Sets Live Currency Conversion)</label>
                     <select name="country">
-                        <option value="Nigeria">🇳🇬 Nigeria (NGN ₦)</option>
-                        <option value="USA">🇺🇸 United States (USD $)</option>
-                        <option value="UK">🇬🇧 United Kingdom (GBP £)</option>
-                        <option value="Saudi Arabia">🇸🇦 Saudi Arabia (SAR SR)</option>
+                        <option value="Nigeria">🇳🇬 Nigeria (₦)</option>
+                        <option value="USA">🇺🇸 USA ($)</option>
+                        <option value="UK">🇬🇧 UK (£)</option>
+                        <option value="Saudi Arabia">🇸🇦 Saudi Arabia (SR)</option>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-orange">Submit Registration</button>
             </form>
-
+<p style="color: #718096; font-size: 0.9em; margin-top: 10px; font-weight: 500;">🌍 Other Countries (Coming Soon...)</p>
             <form action="/login" method="POST">
-                <h3>Client Portal Sign In</h3>
-                <div class="form-group">
-                    <input type="text" name="username" placeholder="Username" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" class="pwd-field" name="password" placeholder="Password" required>
-                </div>
-                <button type="submit" class="btn btn-green">Verify & Authenticate</button>
+                <h3 style="margin-top:0;">Client Portal Sign In</h3>
+                <div class="form-group"><input type="text" name="username" placeholder="Username" required></div>
+                <div class="form-group"><input type="password" class="pwd-field" name="password" placeholder="Password" required></div>
+                <button type="submit" class="btn btn-green">Verify Log In</button>
             </form>
         </div>
         {% else %}
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <span style="color: #2ecc71; font-weight: bold;">● Active Session Secure</span>
-                <h2 style="margin: 5px 0 0 0;">Welcome back, {{ session['user'] }}!</h2>
+                <h2 style="margin: 0 0 5px 0;">Welcome, {{ session['user'] }}</h2>
+                <p style="margin:0;">Global exchange matching is operational on your profile nodes.</p>
             </div>
-            <a href="/logout" style="background: #e74c3c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">Terminate Session</a>
+            <a href="/logout" style="background: #e74c3c; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Logout</a>
         </div>
         {% endif %}
     </div>
@@ -100,62 +94,38 @@
     <div id="adminMenu" class="hidden-menu">
         <form action="/admin_dashboard" method="POST" style="max-width: 400px; margin: 0 auto;">
             <h3>Master Node Access Authentication</h3>
-            <div class="form-group">
-                <input type="text" name="admin_name" placeholder="Admin Security Alias" required>
-            </div>
-            <div class="form-group">
-                <input type="password" name="admin_password" placeholder="Root Console Password" required>
-            </div>
+            <div class="form-group"><input type="text" name="admin_name" placeholder="Admin Security Alias" required></div>
+            <div class="form-group"><input type="password" name="admin_password" placeholder="Root Console Password" required></div>
             <button type="submit" class="btn btn-orange">Initialize Control Grid</button>
         </form>
     </div>
 
     <div class="container">
-        <h2>Premium Active Drops Grid (Valuations in {{ symbol }})</h2>
+        <h2 style="margin-bottom: 30px; font-weight: 700;">Top Selling Product Drops</h2>
         <div class="grid">
             {% for product in products %}
-            <div class="card">
-                <img src="{{ product.image }}" alt="Stock Photo">
-                <div class="card-content">
-                    <h3>{{ product.title }}</h3>
-                    <h2 style="color: #e67e22; margin: 10px 0;">{{ product.price_str }}</h2>
-
-                    <div class="form-group">
-                        <label>Available Size:</label>
-                        <select name="selected_size" style="padding: 5px;">
-                            {% for size in product.sizes %}
-                            <option value="{{ size }}">{{ size }}</option>
-                            {% endfor %}
-                        </select>
+            <a href="/product/{{ product.id }}" class="product-link">
+                <div class="card">
+                    <img src="{{ product.image }}" alt="Catalog Stock">
+                    <div class="card-content">
+                        <h3 class="card-title">{{ product.title }}</h3>
+                        <p class="card-price">{{ product.price_str }}</p>
                     </div>
-
-                    <form action="/submit_card" method="POST" style="margin-top: 15px;">
-                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                        <input type="text" name="card_details" placeholder="Input Checkout Processing Card Data" required style="font-size: 0.85em; margin-bottom: 5px;">
-                        <button type="submit" class="btn btn-green" style="font-size: 0.9em; padding: 6px;">Initiate Secure Order</button>
-                    </form>
                 </div>
-            </div>
+            </a>
             {% endfor %}
         </div>
     </div>
 
     <script>
-        function toggleMenu(menuId) {
-            var menu = document.getElementById(menuId);
-            if (menu.style.display === "block") {
-                menu.style.display = "none";
-            } else {
-                document.getElementById('authMenu').style.display = 'none';
-                document.getElementById('adminMenu').style.display = 'none';
-                menu.style.display = "block";
-            }
+        function toggleMenu(id) {
+            var m = document.getElementById(id);
+            if (m.style.display === "block") { m.style.display = "none"; }
+            else { document.getElementById('authMenu').style.display = 'none'; document.getElementById('adminMenu').style.display = 'none'; m.style.display = "block"; }
         }
-        function togglePasswordVisibility() {
-            var fields = document.getElementsByClassName("pwd-field");
-            for (var i = 0; i < fields.length; i++) {
-                fields[i].type = fields[i].type === "password" ? "text" : "password";
-            }
+        function togglePassword() {
+            var f = document.getElementsByClassName("pwd-field");
+            for (var i=0; i<f.length; i++) f[i].type = f[i].type === "password" ? "text" : "password";
         }
     </script>
 </body>

