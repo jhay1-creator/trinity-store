@@ -57,7 +57,7 @@ def home():
 
 
 # 📱 NEW JUMIA-STYLE ROUTE: Open Dedicated Product Details Page
-@app.route('/product/<int:product_id>')
+@app.route('/product/<product_id>')
 def product_detail(product_id):
     product = next((p for p in products if p["id"] == product_id), None)
     if not product:
@@ -71,7 +71,7 @@ def product_detail(product_id):
 
 
 # 🛒 NEW JUMIA-STYLE ROUTE: Dedicated Secure Checkout Pipeline
-@app.route('/checkout/<int:product_id>', methods=['GET', 'POST'])
+@app.route('/checkout/<product_id>', methods=['GET', 'POST'])
 def checkout(product_id):
     if 'user' not in session:
         flash("You must be logged into your account to initialize checkout secure gateways.", "error")
@@ -162,11 +162,19 @@ def bulk_import():
             parts = [p.strip() for p in line.split(',')]
             if len(parts) >= 4:
                 try:
-                    new_id = max([p["id"] for p in products]) + 1 if products else 1
+                    # Create a list of images if multiple URLs are separated by |
+                    image_raw = parts[3] if len(parts) > 3 else ""
+                    image_list = [url.strip() for url in image_raw.split('|')] if image_raw else []
+
                     products.append({
-                        "id": new_id, "title": parts[0], "base_price": int(parts[1]),
-                        "sizes": parts[2].split('|'), "image": parts[3],
-                        "description": "Bulk integrated drop item available for immediate processing."
+                        "id": new_id,
+                        "title": parts[0],
+                        "base_price": int(parts[1]),
+                        "sizes": parts[2].split('|'),
+                        "image": image_list[0] if image_list else "",
+                        # Keeps the 1st image for the main storefront card
+                        "images": image_list,  # Saves the full list of 4 images for your gallery slider
+                        "description": "Bulk integrated drop item available for immediate processing"
                     })
                 except Exception:
                     continue
@@ -190,3 +198,5 @@ def clear_cards():
         cards_saved.clear()
         return redirect(url_for('admin_dashboard'))
     return "Unauthorized", 403
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
